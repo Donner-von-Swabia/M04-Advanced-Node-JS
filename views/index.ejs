@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+<body>
+    <%- include('./partials/nav.ejs') %>
+    <div class="blogs content">
+        <h2>
+            Look at all them chickens!
+        </h2>
+        <% if (blogs.length > 0) { %>
+            <% blogs.forEach(blogs => { %>
+                <h2 class="title"><%= blogs.title%></h2>
+                <h3 class="snippet"><%= blogs.snippet %></h3>
+                <p class="body"><%= blogs.body %></p>
+            <% }) %>
+        <% }else{ %>
+            <p> Them be ducks</p>
+        <% } %>
+    </div>
+</body>
+<%- include('./partials/foot') %>
+</html>
