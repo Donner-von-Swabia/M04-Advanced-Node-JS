@@ -1,24 +1,79 @@
 const express = require('express');
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const Blog = require('./models/blog');
+
 
 const app = express();
 
+
+const dbURI="mongodb+srv://se09242001:test4@nodetuts.g7cmzow.mongodb.net/?retryWrites=true&w=majority";
+mongoose.connect(dbURI)
+    .then((result)=>{
+        console.log('connected db')
+        app.listen(3000);
+    })
+    .catch((err)=>{
+        console.log(err);
+    })
+
+
 app.set('view engine','ejs');
 
-app.listen(3000);
+//app.listen(3000);
 
+app.use(express.static('public'));
+
+app.use(morgan('tiny'));
+
+app.get('/add-blog', (req,res)=>{
+    const blog = new Blog({
+        title: 'new blog',
+        snippet: 'about a newer blog',
+        body: ' more aboot a bog'
+    });
+    blog.save()
+    .then((result) =>{
+        res.send(result);}
+    )
+    .catch((err) =>{
+        console.log(err);
+    })
+})
+app.get('/all-blogs',(req,res) =>{
+    Blog.find()
+    .then((result) =>{
+        res.send(result);
+    })
+    .catch((err) =>{
+        console.log(err);
+    })
+})
+app.get('/single-blog',(req,res) =>{
+    Blog.findById('6512481a8f8e2bdbd6b36fff')
+    .then((result) =>{
+        res.send(result);
+    })
+    .catch((err) =>{
+        console.log(err);
+    })
+})
 app.get ('/',(req,res) =>{
-    const blogs = [
-        {title:'Star Trek', snippet:'Wrath of Khan', body:'Live long and prosper'},
-        {title:'Star Wars', snippet:'Revenge of the Sith', body:'May the force be with you'},
-        {title:'Rick and morty', snippet:'Season 3', body:'Wabba lubba dubdub'},
-    ]
-    res.render('index',{title:"Homer",blogs});
+    res.redirect('/blogs');
 });
 
 app.get ('/about',(req,res) =>{
     res.render('about',{title:"Aboot"});
 });
-
+app.get('/blogs', (req,res) =>{
+    Blog.find().sort({createdAd: -1})
+        .then((result) =>{
+            res.render('index',{title: 'All Blogs',blogs:result})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+})
 app.get ('/blogs/create',(req,res) =>{
     res.render('create',{title:"Create"});
 });
